@@ -107,11 +107,12 @@ dotnet run -- 2725    # Test [2,7,2,5] digits
 - Unary operations limited to reasonable ranges (factorial ≤ 10, square ≤ 100)
 
 ### Test Expectations
-- All equation results must contain exactly one equals s ign
+- All equation results must contain exactly one equals sign
 - Mathematical validation with tolerance (< 0.0001 for floating point)
 - Complex nested patterns require specific algorithm enhancements
 
 ### Performance Considerations
+- we aim for "at least one solution". If an early solution, dont continue searching
 - 6+ digit sets use aggressive early termination
 - Recursive depth limited to prevent stack overflow
 - Expression generation bounded by reasonable mathematical limits
