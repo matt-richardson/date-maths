@@ -1448,6 +1448,57 @@
                     }
                 }
             }
+            
+            // NEW: Try negative parentheses arithmetic patterns like (-4 + 7) * 2 = 6
+            for (int i = 0; i < digits.Count - 3; i++)
+            {
+                if (validEquations.Count >= maxResults) break;
+                
+                int firstDigit = digits[i];     // 4
+                int secondDigit = digits[i + 1]; // 7
+                int thirdDigit = digits[i + 2];  // 2
+                int fourthDigit = digits[i + 3]; // 6
+                
+                // Try pattern: (-firstDigit op1 secondDigit) op2 thirdDigit = fourthDigit
+                foreach (var op1 in basicOperators)
+                {
+                    foreach (var op2 in basicOperators)
+                    {
+                        // Calculate inside parentheses: -firstDigit op1 secondDigit
+                        double parenthesesResult = op1 switch
+                        {
+                            "+" => -firstDigit + secondDigit,     // -4 + 7 = 3
+                            "-" => -firstDigit - secondDigit,     // -4 - 7 = -11
+                            "*" => -firstDigit * secondDigit,     // -4 * 7 = -28
+                            "/" when secondDigit != 0 => (double)(-firstDigit) / secondDigit, // -4 / 7 = -0.57
+                            _ => double.NaN
+                        };
+                        
+                        if (double.IsNaN(parenthesesResult)) continue;
+                        
+                        // Calculate full equation: parenthesesResult op2 thirdDigit
+                        double leftSide = op2 switch
+                        {
+                            "+" => parenthesesResult + thirdDigit,  // 3 + 2 = 5
+                            "-" => parenthesesResult - thirdDigit,  // 3 - 2 = 1
+                            "*" => parenthesesResult * thirdDigit,  // 3 * 2 = 6
+                            "/" when thirdDigit != 0 => parenthesesResult / thirdDigit, // 3 / 2 = 1.5
+                            _ => double.NaN
+                        };
+                        
+                        if (double.IsNaN(leftSide)) continue;
+                        
+                        // Check if it equals the fourth digit
+                        if (Math.Abs(leftSide - fourthDigit) < 0.0001)
+                        {
+                            string equation = $"(-{firstDigit} {op1} {secondDigit}) {op2} {thirdDigit} = {fourthDigit}";
+                            validEquations.Add(equation);
+                            
+                            if (validEquations.Count >= maxResults) return;
+                        }
+                    }
+                }
+            }
         }
         
         static void FindSquareRootWithParentheses(List<int> digits, HashSet<string> validEquations)
