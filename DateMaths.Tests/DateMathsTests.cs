@@ -769,6 +769,7 @@ public class DateMathsTests(ITestOutputHelper testOutputHelper)
     [InlineData(new[] {1, 1, 2, 6}, "(1 * 1 + 2)! = 6" )]
     [InlineData(new[] {1, 5, 2, 2, 6}, "1 + 5 + 2 = 2 + 6" )]
     [InlineData(new[] {5, 6, 2, 6}, "(-5 + 6 + 2)! = 6" )]
+    [InlineData(new[] {4, 7, 2, 6}, "(-4 + 7) * 2 = 6" )]
     public void FindValidEquations(int[] digits, string expectedEquation)
     {
         // Act
