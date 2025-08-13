@@ -47,6 +47,30 @@ dotnet test --filter "TestMethodName"         # Run specific test
 dotnet test --filter "digits: [9, 9, 2, 5]"  # Run specific theory data
 ```
 
+### Git Workflow - Auto-save Changes
+**IMPORTANT**: After every code change, automatically commit changes to git using these commands:
+
+```bash
+# 1. Stage all changes
+git add .
+
+# 2. Commit with descriptive message
+git commit -m "Update algorithm: [brief description of change]
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# 3. Check status to verify commit succeeded
+git status
+```
+
+**Auto-commit Pattern**: Always follow this sequence after making any code modifications:
+1. Make the code change (edit files, add features, fix bugs)
+2. Test the change (run `dotnet test` to ensure functionality)
+3. Immediately commit to git using the above commands
+4. Never leave uncommitted changes - preserve all work automatically
+
 ### Development Testing Patterns
 ```bash
 # Test specific digit combinations
