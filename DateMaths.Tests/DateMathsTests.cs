@@ -764,8 +764,11 @@ public class DateMathsTests(ITestOutputHelper testOutputHelper)
     [InlineData(new[] {7, 9, 2, 5}, "7 + √9 = 2 * 5" )]
     [InlineData(new[] {8, 9, 2, 5}, "√((8 - √9) ^ 2) = 5" )]
     [InlineData(new[] {9, 9, 2, 5}, "√(√9 ^ √9 - 2) = 5" )]
-    [InlineData(new[] {2, 6, 9, 2, 5}, "2 + 6 - √9 = √25" )]
+    //[InlineData(new[] {2, 6, 9, 2, 5}, "2 + 6 - √9 = √25" )]
+    [InlineData(new[] {2, 6, 9, 2, 5}, "2 * 6 = 9 - 2 + 5" )]
     [InlineData(new[] {1, 1, 2, 6}, "(1 * 1 + 2)! = 6" )]
+    [InlineData(new[] {1, 5, 2, 2, 6}, "1 + 5 + 2 = 2 + 6" )]
+    [InlineData(new[] {5, 6, 2, 6}, "(-5 + 6 + 2)! = 6" )]
     public void FindValidEquations(int[] digits, string expectedEquation)
     {
         // Act

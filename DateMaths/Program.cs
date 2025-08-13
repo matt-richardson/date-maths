@@ -100,11 +100,11 @@
                 
                 if (equations.Count == 0)
                 {
-                    Console.WriteLine("---------------------------------------------");
                     Console.WriteLine($"🎯 FOUND ONE! {currentDate:dd/MM/yy} has NO valid equations!");
                     Console.WriteLine($"Date format: {dateStr}");
                     Console.WriteLine($"Digits: [{string.Join(", ", digits)}]");
                     Console.WriteLine("---------------------------------------------");
+                    return;
                 } 
                 else
                 {
@@ -181,7 +181,7 @@
             // Limit to reasonable number counts for performance
             
             // More aggressive limits for large digit sets
-            int maxNumCount = digits.Count >= 6 ? 3 : Math.Min(4, digits.Count);
+            int maxNumCount = digits.Count >= 6 ? 3 : Math.Min(5, digits.Count);
             int earlyExitThreshold = digits.Count >= 6 ? 10 : 50;
             
             for (int numCount = 2; numCount <= maxNumCount; numCount++)
@@ -1392,6 +1392,54 @@
                             if (Math.Abs(factorialResult - fourthDigit) < 0.0001)
                             {
                                 string equation = $"({firstDigit} {op1} {secondDigit} {op2} {thirdDigit})! = {fourthDigit}";
+                                validEquations.Add(equation);
+                                
+                                if (validEquations.Count >= maxResults) return;
+                            }
+                        }
+                    }
+                }
+                
+                // NEW: Try pattern with negative first digit: (-firstDigit op1 secondDigit op2 thirdDigit)! = fourthDigit
+                // This handles cases like (-5 + 6 + 2)! = 6
+                foreach (var op1 in basicOperators)
+                {
+                    foreach (var op2 in basicOperators)
+                    {
+                        // Calculate inside parentheses: -firstDigit op1 secondDigit op2 thirdDigit
+                        double firstOperation = op1 switch
+                        {
+                            "+" => -firstDigit + secondDigit,     // -5 + 6 = 1
+                            "-" => -firstDigit - secondDigit,     // -5 - 6 = -11
+                            "*" => -firstDigit * secondDigit,     // -5 * 6 = -30
+                            "/" when secondDigit != 0 => (double)(-firstDigit) / secondDigit, // -5 / 6 = -0.83
+                            _ => double.NaN
+                        };
+                        
+                        if (double.IsNaN(firstOperation)) continue;
+                        
+                        double parenthesesResult = op2 switch
+                        {
+                            "+" => firstOperation + thirdDigit,  // 1 + 2 = 3
+                            "-" => firstOperation - thirdDigit,  // 1 - 2 = -1
+                            "*" => firstOperation * thirdDigit,  // 1 * 2 = 2
+                            "/" when thirdDigit != 0 => firstOperation / thirdDigit, // 1 / 2 = 0.5
+                            _ => double.NaN
+                        };
+                        
+                        if (double.IsNaN(parenthesesResult)) continue;
+                        
+                        // Check if the result is a valid input for factorial
+                        int factorialInput = (int)Math.Round(parenthesesResult);
+                        if (Math.Abs(parenthesesResult - factorialInput) < 0.0001 && 
+                            IsValidUnaryOperation(factorialInput, "!"))
+                        {
+                            double factorialResult = CalculateUnary(factorialInput, "!"); // 3! = 6
+                            
+                            // Check if it equals the fourth digit
+                            if (Math.Abs(factorialResult - fourthDigit) < 0.0001)
+                            {
+                                string equation = $"(-{firstDigit} {op1} {secondDigit} {op2} {thirdDigit})! = {fourthDigit}";
                                 validEquations.Add(equation);
                                 
                                 if (validEquations.Count >= maxResults) return;
