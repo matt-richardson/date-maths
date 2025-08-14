@@ -74,7 +74,7 @@
             
             DateTime currentDate = DateTime.Now;
             int daysChecked = 0;
-            const int maxDaysToCheck = 366; // Check up to a year ahead
+            const int maxDaysToCheck = 1000; // Check up to a year ahead
             
             Console.WriteLine($"Starting search from: {currentDate:dd/MM/yy}");
             Console.WriteLine("Checking each day for valid equations...\n");
@@ -1495,6 +1495,65 @@
                             validEquations.Add(equation);
                             
                             if (validEquations.Count >= maxResults) return;
+                        }
+                    }
+                }
+            }
+            
+            // NEW: Try arithmetic + factorial patterns like 1 + (1 + 2)! = 7
+            for (int i = 0; i < digits.Count - 3; i++)
+            {
+                if (validEquations.Count >= maxResults) break;
+                
+                int firstDigit = digits[i];     // 1
+                int secondDigit = digits[i + 1]; // 1
+                int thirdDigit = digits[i + 2];  // 2
+                int fourthDigit = digits[i + 3]; // 7
+                
+                // Try pattern: firstDigit op1 (secondDigit op2 thirdDigit)! = fourthDigit
+                foreach (var op1 in basicOperators)
+                {
+                    foreach (var op2 in basicOperators)
+                    {
+                        // Calculate inside parentheses: secondDigit op2 thirdDigit
+                        double parenthesesResult = op2 switch
+                        {
+                            "+" => secondDigit + thirdDigit,     // 1 + 2 = 3
+                            "-" => secondDigit - thirdDigit,     // 1 - 2 = -1
+                            "*" => secondDigit * thirdDigit,     // 1 * 2 = 2
+                            "/" when thirdDigit != 0 => (double)secondDigit / thirdDigit, // 1 / 2 = 0.5
+                            _ => double.NaN
+                        };
+                        
+                        if (double.IsNaN(parenthesesResult)) continue;
+                        
+                        // Check if the result is a valid input for factorial
+                        int factorialInput = (int)Math.Round(parenthesesResult);
+                        if (Math.Abs(parenthesesResult - factorialInput) < 0.0001 && 
+                            IsValidUnaryOperation(factorialInput, "!"))
+                        {
+                            double factorialResult = CalculateUnary(factorialInput, "!"); // 3! = 6
+                            
+                            // Calculate full equation: firstDigit op1 factorialResult
+                            double leftSide = op1 switch
+                            {
+                                "+" => firstDigit + factorialResult,  // 1 + 6 = 7
+                                "-" => firstDigit - factorialResult,  // 1 - 6 = -5
+                                "*" => firstDigit * factorialResult,  // 1 * 6 = 6
+                                "/" when factorialResult != 0 => firstDigit / factorialResult, // 1 / 6 = 0.17
+                                _ => double.NaN
+                            };
+                            
+                            if (double.IsNaN(leftSide)) continue;
+                            
+                            // Check if it equals the fourth digit
+                            if (Math.Abs(leftSide - fourthDigit) < 0.0001)
+                            {
+                                string equation = $"{firstDigit} {op1} ({secondDigit} {op2} {thirdDigit})! = {fourthDigit}";
+                                validEquations.Add(equation);
+                                
+                                if (validEquations.Count >= maxResults) return;
+                            }
                         }
                     }
                 }
