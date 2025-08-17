@@ -764,13 +764,13 @@ public class DateMathsTests(ITestOutputHelper testOutputHelper)
     [InlineData("07/09/25", "7 + √9 = 2 * 5" )]
     [InlineData("08/09/25", "√((8 - √9) ^ 2) = 5" )]
     [InlineData("09/09/25", "√(√9 ^ √9 - 2) = 5" )]
-    //[InlineData("2, 6, 9/25" "2 + 6 - √9 = √25" )]
     [InlineData("26/09/25", "2 * 6 = 9 - 2 + 5" )]
     [InlineData("01/01/26", "(1 * 1 + 2)! = 6" )]
     [InlineData("15/02/26", "1 + 5 + 2 = 2 + 6" )]
     [InlineData("05/06/26", "(-5 + 6 + 2)! = 6" )]
     [InlineData("04/07/26", "(-4 + 7) * 2 = 6" )]
     [InlineData("01/01/27", "1 + (1 + 2)! = 7" )]
+    [InlineData("02/02/27", "Σ2 + 2 + 2 = 7" )]
     public void FindValidEquations(string date, string expectedEquation)
     {
         // Act

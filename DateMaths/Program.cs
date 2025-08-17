@@ -333,7 +333,7 @@
         static void FindAdvancedEquationsOptimized(List<int> digits, HashSet<string> validEquations, int maxResults)
         {
             var basicOperators = new[] { "+", "-", "*", "/" };
-            var unaryOperators = new[] { "²", "³", "√", "∛", "!" };
+            var unaryOperators = new[] { "²", "³", "√", "∛", "!", "Σ" };
             
             // Generate expressions more selectively with early termination
             GenerateExpressionsOptimized(digits, 0, new List<ExpressionElement>(), validEquations, 
@@ -478,7 +478,7 @@
         {
             var results = new List<List<ExpressionElement>>();
             var basicOperators = new[] { "+", "-", "*", "/" };
-            var unaryOperators = new[] { "²", "³", "√", "∛", "!" };
+            var unaryOperators = new[] { "²", "³", "√", "∛", "!", "Σ" };
             
             // Generate all possible ways to partition digits and assign operators
             GenerateExpressionsRecursive(digits, 0, new List<ExpressionElement>(), results, basicOperators, unaryOperators);
@@ -588,6 +588,7 @@
                 "³" => number <= 20,  // Cube for reasonable numbers  
                 "√" => number >= 0,   // Square root for non-negative
                 "∛" => true,          // Cube root works for any number
+                "Σ" => number >= 0 && number <= 20, // Triangular number for reasonable numbers
                 _ => false
             };
         }
@@ -601,6 +602,7 @@
                 "³" => number * number * number,
                 "√" => Math.Sqrt(number),
                 "∛" => Math.Pow(number, 1.0/3.0),
+                "Σ" => TriangularNumber(number),
                 _ => number
             };
         }
@@ -614,6 +616,7 @@
                 "³" => $"{number}³", 
                 "√" => $"√{number}",
                 "∛" => $"∛{number}",
+                "Σ" => $"Σ{number}",
                 _ => number.ToString()
             };
         }
@@ -628,6 +631,12 @@
             return result;
         }
         
+        public static double TriangularNumber(int n)
+        {
+            if (n < 0) return double.NaN;
+            return n * (n + 1) / 2.0;
+        }
+        
         static void FindRepeatedUnaryPatterns(List<int> digits, HashSet<string> validEquations, int maxResults)
         {
             // This method specifically looks for patterns like √2 * √2 + 8 = 2 * 5
@@ -635,7 +644,7 @@
             
             if (validEquations.Count >= maxResults) return;
             
-            var unaryOperators = new[] { "√", "²", "³", "∛", "!" };
+            var unaryOperators = new[] { "√", "²", "³", "∛", "!", "Σ" };
             var basicOperators = new[] { "+", "-", "*", "/" };
             
             // Look for patterns where we can use the same digit value multiple times
@@ -1183,7 +1192,7 @@
             if (validEquations.Count >= maxResults || digits.Count < 4) return;
             
             var basicOperators = new[] { "+", "-", "*", "/" };
-            var unaryOperators = new[] { "√", "²", "³", "∛", "!" };
+            var unaryOperators = new[] { "√", "²", "³", "∛", "!", "Σ" };
             
             // For digits [2,6,9,2,5], try pattern: 2 + 6 - √9 = √25
             // Pattern: a op1 b op2 √c = √de
