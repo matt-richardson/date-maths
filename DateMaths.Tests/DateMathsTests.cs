@@ -760,20 +760,21 @@ public class DateMathsTests(ITestOutputHelper testOutputHelper)
     }
         
     [Theory]
-    [InlineData(new[] {5, 9, 2, 5}, "√5 * √(√9 + 2) = 5" )]
-    [InlineData(new[] {7, 9, 2, 5}, "7 + √9 = 2 * 5" )]
-    [InlineData(new[] {8, 9, 2, 5}, "√((8 - √9) ^ 2) = 5" )]
-    [InlineData(new[] {9, 9, 2, 5}, "√(√9 ^ √9 - 2) = 5" )]
-    //[InlineData(new[] {2, 6, 9, 2, 5}, "2 + 6 - √9 = √25" )]
-    [InlineData(new[] {2, 6, 9, 2, 5}, "2 * 6 = 9 - 2 + 5" )]
-    [InlineData(new[] {1, 1, 2, 6}, "(1 * 1 + 2)! = 6" )]
-    [InlineData(new[] {1, 5, 2, 2, 6}, "1 + 5 + 2 = 2 + 6" )]
-    [InlineData(new[] {5, 6, 2, 6}, "(-5 + 6 + 2)! = 6" )]
-    [InlineData(new[] {4, 7, 2, 6}, "(-4 + 7) * 2 = 6" )]
-    [InlineData(new[] {1, 1, 2, 7}, "1 + (1 + 2)! = 7" )]
-    public void FindValidEquations(int[] digits, string expectedEquation)
+    [InlineData("05/09/25", "√5 * √(√9 + 2) = 5" )]
+    [InlineData("07/09/25", "7 + √9 = 2 * 5" )]
+    [InlineData("08/09/25", "√((8 - √9) ^ 2) = 5" )]
+    [InlineData("09/09/25", "√(√9 ^ √9 - 2) = 5" )]
+    //[InlineData("2, 6, 9/25" "2 + 6 - √9 = √25" )]
+    [InlineData("26/09/25", "2 * 6 = 9 - 2 + 5" )]
+    [InlineData("01/01/26", "(1 * 1 + 2)! = 6" )]
+    [InlineData("15/02/26", "1 + 5 + 2 = 2 + 6" )]
+    [InlineData("05/06/26", "(-5 + 6 + 2)! = 6" )]
+    [InlineData("04/07/26", "(-4 + 7) * 2 = 6" )]
+    [InlineData("01/01/27", "1 + (1 + 2)! = 7" )]
+    public void FindValidEquations(string date, string expectedEquation)
     {
         // Act
+        var digits = Program.ExtractDigits(Program.FormatDateWithoutLeadingZeros(DateTime.ParseExact(date, "dd/MM/yy", null)));
         var result = Program.FindValidEquations(digits.ToList());
             
         // Debug: Show what we found
