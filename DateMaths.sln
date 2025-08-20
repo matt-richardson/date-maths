@@ -6,6 +6,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DateMaths", "DateMaths\date
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DateMaths.Tests", "DateMaths.Tests\DateMaths.Tests.csproj", "{22222222-2222-2222-2222-222222222222}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DateMaths.Web", "DateMaths.Web", "{FE7091E7-447E-43DB-8181-09A051DB3FC1}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+		index.html = index.html
+		server.js = server.js
+		package.json = package.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,4 +29,4 @@ Global
 		{22222222-2222-2222-2222-222222222222}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22222222-2222-2222-2222-222222222222}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-EndGlobal 
+EndGlobal

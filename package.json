@@ -1,0 +1,22 @@
+{
+  "name": "date-math-magic",
+  "version": "1.0.0",
+  "description": "A fun web app that turns dates into mathematical equations for kids!",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": ["math", "education", "kids", "dates", "equations"],
+  "author": "Date Math Magic Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
