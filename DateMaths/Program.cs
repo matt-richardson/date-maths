@@ -150,12 +150,18 @@
             // FIRST: Try simple basic equations (handles cases like "1 + 1 = 2") - These are fast
             FindBasicEquations(digits, validEquations);
             
+            // CRITICAL: Filter out equations that don't use all digits
+            validEquations = FilterEquationsUsingAllDigits(validEquations, digits);
+            
             // Early exit if we found enough basic equations
             if (validEquations.Count >= targetEquationCount) 
                 return validEquations.OrderBy(eq => eq.Length).ToList();
             
             // SECOND: Try parenthesized square root operations (specific patterns)
             FindSquareRootWithParentheses(digits, validEquations);
+            
+            // CRITICAL: Filter out equations that don't use all digits
+            validEquations = FilterEquationsUsingAllDigits(validEquations, digits);
             
             // Early exit if we found enough equations
             if (validEquations.Count >= targetEquationCount) 
@@ -167,9 +173,43 @@
             {
                 int maxResults = digits.Count >= 6 ? 10 : 20;
                 FindAdvancedEquationsOptimized(digits, validEquations, maxResults);
+                
+                // CRITICAL: Filter out equations that don't use all digits
+                validEquations = FilterEquationsUsingAllDigits(validEquations, digits);
             }
             
             return validEquations.OrderBy(eq => eq.Length).ToList();
+        }
+        
+        static HashSet<string> FilterEquationsUsingAllDigits(HashSet<string> equations, List<int> originalDigits)
+        {
+            var filteredEquations = new HashSet<string>();
+            
+            foreach (var equation in equations)
+            {
+                // Extract all digits used in the equation
+                var usedDigits = equation.Where(char.IsDigit).Select(c => int.Parse(c.ToString())).ToList();
+                
+                // Check if all original digits are used
+                if (UsesAllDigits(usedDigits, originalDigits))
+                {
+                    filteredEquations.Add(equation);
+                }
+            }
+            
+            return filteredEquations;
+        }
+        
+        static bool UsesAllDigits(List<int> usedDigits, List<int> originalDigits)
+        {
+            // Must use exactly the same number of digits
+            if (usedDigits.Count != originalDigits.Count) return false;
+            
+            // Must use the same digits (accounting for duplicates)
+            var sortedOriginal = originalDigits.OrderBy(x => x).ToList();
+            var sortedUsed = usedDigits.OrderBy(x => x).ToList();
+            
+            return sortedOriginal.SequenceEqual(sortedUsed);
         }
         
         static void FindBasicEquations(List<int> digits, HashSet<string> validEquations)

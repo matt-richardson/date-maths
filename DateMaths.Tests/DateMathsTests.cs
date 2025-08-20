@@ -577,11 +577,15 @@ public class DateMathsTests(ITestOutputHelper testOutputHelper)
         }
     }
         
-    [Fact]
-    public void FindValidEquations_MustUseAllDigitsInOrder()
+    [Theory]
+    [InlineData(new[] { 3, 1, 1, 2, 3 }, "Regular 5-digit case")]
+    [InlineData(new[] { 3, 1, 1, 0, 2, 5 }, "October 31, 2025 - 6-digit case with zero")]
+    [InlineData(new[] { 1, 1, 2 }, "Simple 3-digit case")]
+    [InlineData(new[] { 2, 7, 2, 5 }, "February 7, 2025 - 4-digit case")]
+    public void FindValidEquations_MustUseAllDigits(int[] inputDigits, string description)
     {
         // Arrange
-        var digits = new List<int> { 3, 1, 1, 2, 3 };
+        var digits = inputDigits.ToList();
             
         // Act
         var equations = Program.FindValidEquations(digits);
@@ -589,31 +593,26 @@ public class DateMathsTests(ITestOutputHelper testOutputHelper)
         // Assert - Every equation must use ALL digits from the input
         foreach (var equation in equations)
         {
-            // Remove spaces and equals sign to get just the digits used
-            var usedChars = equation.Replace(" ", "").Replace("=", "")
-                .Where(c => char.IsDigit(c)).ToList();
+            // Extract all digits used in the equation
+            var usedDigits = equation.Where(char.IsDigit).Select(c => int.Parse(c.ToString())).ToList();
                 
-            // Convert back to digit list for comparison
-            var usedDigits = usedChars.Select(c => int.Parse(c.ToString())).ToList();
-                
-            // Must use exactly the same number of digits
-            Assert.True(usedDigits.Count >= digits.Count, 
-                $"Equation '{equation}' uses only {usedDigits.Count} digits but should use all {digits.Count} digits: [{string.Join(",", digits)}]");
-                
-            // Debug output for failing cases
+            // For debugging
+            testOutputHelper.WriteLine($"Test: {description}");
             testOutputHelper.WriteLine($"Equation: {equation}");
-            testOutputHelper.WriteLine($"Original digits: [{string.Join(",", digits)}]");
-            testOutputHelper.WriteLine($"Used digits: [{string.Join(",", usedDigits)}]");
+            testOutputHelper.WriteLine($"Original digits: [{string.Join(",", digits)}] (count: {digits.Count})");
+            testOutputHelper.WriteLine($"Used digits: [{string.Join(",", usedDigits)}] (count: {usedDigits.Count})");
+                
+            // CRITICAL: Must use all digits
+            Assert.True(usedDigits.Count == digits.Count, 
+                $"Equation '{equation}' uses {usedDigits.Count} digits but must use all {digits.Count} digits from [{string.Join(",", digits)}]");
+                
+            // Additional check: must use the exact digits available (accounting for duplicates)
+            var sortedOriginal = digits.OrderBy(x => x).ToList();
+            var sortedUsed = usedDigits.OrderBy(x => x).ToList();
+            Assert.Equal(sortedOriginal, sortedUsed);
         }
             
-        // Additional check: no equation should be shorter than reasonably possible
-        foreach (var equation in equations)
-        {
-            // A valid equation using all digits should be reasonably long
-            // Minimum: each digit + operators + equals sign
-            Assert.True(equation.Replace(" ", "").Length >= digits.Count + 1, 
-                $"Equation '{equation}' seems too short to use all {digits.Count} digits");
-        }
+        testOutputHelper.WriteLine($"✓ All {equations.Count} equations for {description} use all {digits.Count} digits");
     }
         
     [Fact]
