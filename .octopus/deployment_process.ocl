@@ -1,0 +1,82 @@
+step "disable-uptime-kuma-check" {
+    name = "Disable uptime-kuma check"
+    properties = {
+        Octopus.Action.TargetRoles = "nas"
+    }
+
+    action {
+        properties = {
+            Octopus.Action.RunOnServer = "false"
+            Octopus.Action.Template.Id = "ActionTemplates-1"
+            Octopus.Action.Template.Version = "4"
+            UptimeKuma.Monitor.Id = "46,45,49"
+        }
+        worker_pool_variable = ""
+    }
+}
+
+step "stop-existing-container" {
+    name = "Stop existing container"
+    properties = {
+        Octopus.Action.TargetRoles = "nas"
+    }
+
+    action {
+        action_type = "Octopus.DockerStop"
+        properties = {
+            Octopus.Action.Docker.Remove = "True"
+        }
+        worker_pool_variable = ""
+    }
+}
+
+step "start-new-seq-container" {
+    name = "Start new container"
+    properties = {
+        Octopus.Action.TargetRoles = "nas"
+    }
+
+    action "start-new-container" {
+        action_type = "Octopus.DockerRun"
+        properties = {
+            Octopus.Action.Docker.Args = "--name datemaths --memory 256m"
+            Octopus.Action.Docker.EnvVariable = "{\"VIRTUAL_HOST\":\"datemaths.sybix9.com\",\"LETSENCRYPT_HOST\":\"datemaths.sybix9.com\",\"VIRTUAL_PORT\":\"3000\"}"
+            Octopus.Action.Docker.NetworkName = "homelab"
+            Octopus.Action.Docker.NetworkType = "network"
+            Octopus.Action.Docker.PortAutoMap = "False"
+            Octopus.Action.Docker.PortMapping = "{\"3000\":\"8901\"}"
+            Octopus.Action.Docker.RestartPolicy = "unless-stopped"
+            Octopus.Action.Docker.VolumeBindings = "{}"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "ghcr-io"
+            Octopus.Action.Package.PackageId = "matt-richardson/date-maths"
+        }
+        worker_pool_variable = ""
+
+        packages {
+            acquisition_location = "Server"
+            feed = "ghcr-io"
+            package_id = "matt-richardson/date-maths"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
+
+step "re-enable-uptime-kuma-check" {
+    condition = "Always"
+    name = "Re-enable uptime-kuma check"
+    properties = {
+        Octopus.Action.TargetRoles = "nas"
+    }
+
+    action {
+        properties = {
+            Octopus.Action.RunOnServer = "false"
+            Octopus.Action.Template.Id = "ActionTemplates-2"
+            Octopus.Action.Template.Version = "2"
+        }
+        worker_pool_variable = ""
+    }
+}
